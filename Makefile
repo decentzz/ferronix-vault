@@ -1,5 +1,5 @@
 # ============================================================
-#  Time-Lock Vault — Developer Makefile
+#  Ferronix Vault — Developer Makefile
 # ============================================================
 
 WASM_TARGET  := wasm32-unknown-unknown
@@ -8,6 +8,7 @@ OPTIMIZED    := target/time_lock_vault.optimized.wasm
 
 .PHONY: all build test fmt lint clean optimize deploy-testnet size check audit deny
 .PHONY: all build test watch fmt lint clean optimize deploy-testnet size check doc smoke-test-local
+.PHONY: frontend-install frontend-build frontend-dev build-all
 
 ## Default: lint + test
 all: lint test
@@ -36,8 +37,8 @@ fmt-check:
 lint:
 	cargo clippy --all-targets --features testutils -- -D warnings
 
-## Run fmt-check + lint + test + build + audit + deny in sequence (mirrors CI)
-check: fmt-check lint test build audit deny
+## Run fmt-check + lint + test + audit + deny in sequence (mirrors CI)
+check: fmt-check lint test audit deny
 
 ## Check dependencies for known security vulnerabilities
 audit:
@@ -82,3 +83,18 @@ check-wasm-size: optimize
 ## Run smoke tests against a local Soroban standalone node (requires stellar CLI)
 smoke-test-local: build
 	bash scripts/smoke_test_local.sh
+
+## Install frontend dependencies
+frontend-install:
+	cd frontend && npm install
+
+## Build frontend production bundle
+frontend-build:
+	cd frontend && npm run build
+
+## Start frontend local dev server
+frontend-dev:
+	cd frontend && npm run dev
+
+## Build both smart contract and frontend
+build-all: build frontend-build

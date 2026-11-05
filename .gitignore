@@ -45,3 +45,9 @@ coverage/
 # Profiling data
 *.profraw
 *.profdata
+
+# Frontend web app artifacts
+frontend/dist/
+frontend/node_modules/
+node_modules/
+.npm

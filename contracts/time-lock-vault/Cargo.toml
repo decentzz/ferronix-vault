@@ -3,9 +3,9 @@ name = "time-lock-vault"
 version = "0.1.0"
 edition = "2021"
 authors = ["Your Name <you@example.com>"]
-description = "A decentralized time-lock vault on Stellar Soroban"
+description = "Ferronix Vault smart contract on Stellar Soroban"
 license = "MIT"
-repository = "https://github.com/your-org/time-lock-vault"
+repository = "https://github.com/kenedybok3/Ferronix-vault"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

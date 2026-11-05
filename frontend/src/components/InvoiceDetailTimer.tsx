@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 
 /**
  * Parses seconds remaining into { days, hours, minutes, seconds }.
  */
-function parseCountdown(totalSeconds) {
+function parseCountdown(totalSeconds: number) {
   const s = Math.max(0, totalSeconds);
   return {
     days: Math.floor(s / 86400),
@@ -13,19 +13,16 @@ function parseCountdown(totalSeconds) {
   };
 }
 
-function pad(n) {
-  return String(n).padStart(2, "0");
+function pad(n: number) {
+  return String(n).padStart(2, '0');
 }
 
-/**
- * CountdownTimer
- *
- * Props:
- *   expiresAt  {number}   Unix timestamp (seconds) of the invoice expiry.
- *   onExpired  {function} Callback fired when the countdown reaches zero.
- *                         The parent should use this to refresh the invoice status.
- */
-export function CountdownTimer({ expiresAt, onExpired }) {
+export interface CountdownTimerProps {
+  expiresAt: number;
+  onExpired?: () => void;
+}
+
+export function CountdownTimer({ expiresAt, onExpired }: CountdownTimerProps) {
   const [remaining, setRemaining] = useState(() =>
     Math.max(0, expiresAt - Math.floor(Date.now() / 1000))
   );
@@ -48,9 +45,9 @@ export function CountdownTimer({ expiresAt, onExpired }) {
     }, 1000);
 
     return () => clearInterval(id);
-  }, [expiresAt]); // expiresAt is stable; re-run only if the invoice changes
+  }, [expiresAt, remaining]);
 
-  if (remaining <= 0) return null; // caller renders the Expired badge instead
+  if (remaining <= 0) return null;
 
   const { days, hours, minutes, seconds } = parseCountdown(remaining);
 
@@ -78,25 +75,24 @@ export function CountdownTimer({ expiresAt, onExpired }) {
   );
 }
 
-/**
- * InvoiceDetailTimer
- *
- * Wraps CountdownTimer with invoice-status auto-refresh logic.
- *
- * Props:
- *   invoice    {object}   Invoice object with at least { expires_at, status }.
- *   onRefresh  {function} Async function that re-fetches and updates the invoice.
- */
-export default function InvoiceDetailTimer({ invoice, onRefresh }) {
+export interface InvoiceDetailTimerProps {
+  invoice: {
+    expires_at: number;
+    status: string;
+  };
+  onRefresh?: () => Promise<void> | void;
+}
+
+export default function InvoiceDetailTimer({ invoice, onRefresh }: InvoiceDetailTimerProps) {
   const isExpired =
-    invoice.status === "Expired" ||
+    invoice.status === 'Expired' ||
     invoice.expires_at <= Math.floor(Date.now() / 1000);
 
   async function handleExpired() {
     try {
       await onRefresh?.();
     } catch {
-      // silently ignore refresh errors — the UI can retry on next interaction
+      // silently ignore refresh errors
     }
   }
 
